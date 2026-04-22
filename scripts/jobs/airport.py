@@ -1,11 +1,8 @@
 from config import ENV, CONFIG
-from scripts.utils.spark_session import get_spark
+import scripts.utils.utils as u 
 
 
-spark = get_spark()
+input_path = CONFIG[ENV]["airport_master"]
 
-input_path = CONFIG[ENV]['input_path']
-print(input_path)
-df = spark.read.option('header', True).csv(input_path)
-
-df.show(5, truncate=False)
+airport_raw_df = u.load_raw_data(input_path, 'T_MASTER_COORD.csv')
+airport_raw_df.show(5)

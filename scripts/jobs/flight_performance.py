@@ -1,17 +1,13 @@
-import pyspark.sql.functions as F
-from config import ENV, CONFIG
-import scripts.utils.utils as u
-from functools import reduce
+import scripts.ingestions.flight_performance_raw as flight_performance_ingestion
+import scripts.utils.dq_ingestion_utils as idq
 
 
-def load_raw_flight_performance():
-    base_path = CONFIG[ENV]["flight_performance"]
+def run_flight_performance_job(root_path, spark):
+    flight_performance_idq = idq.IngestionDataQuality()
 
-    _, _, csv_files =u.get_files_by_year(base_path, 2013, 2015)
+    csv_files, flight_performance_raw_df = flight_performance_ingestion.load_flight_performance_data(root_path, spark)
 
-    dfs = [u.load_raw_data(f) for f in csv_files]
-    return reduce(lambda a, b: a.unionByName(b), dfs)
-
-
-flight_performance_raw = load_raw_flight_performance()
-flight_performance_raw.show(5)
+    # DQ ingestion: verify combined row counts of all csv files == raw dataset total row count
+    flight_performance_idq.verify_source_file_row_counts(csv_files)
+    flight_performance_idq.log_raw_df_count(flight_performance_raw_df)
+    flight_performance_idq.verify_total_row_counts()

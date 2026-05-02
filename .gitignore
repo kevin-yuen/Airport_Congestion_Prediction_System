@@ -1,2 +1,4 @@
 data/source/
 credentials
+venv311/
+venv*/

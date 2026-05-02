@@ -1,19 +1,13 @@
-from scripts.utils.spark_session import get_spark
-from functools import reduce
 import os
 import constants as c
+import scripts.utils.dq_ingestion_utils as dq
 
 
-spark = get_spark()
-
-def load_raw_data(root_path, filename=None, header=True):
-    if filename is not None:
-        root_path = root_path + filename
-
+def load_raw_data(file_path, spark, header=True):
     df = spark.read \
         .option("header", header) \
         .option("inferSchema", "true") \
-        .csv(root_path)
+        .csv(file_path)
     
     return df
 
@@ -50,11 +44,14 @@ def get_files_by_state(base_path):
     return csv_files
 
 
-def parallelize_processing(files, process_function):
+def parallelize_processing(files, process_function, spark):
     num_cores = spark.sparkContext.defaultParallelism       # get the number of available cores
     num_partitions = num_cores * 2                          # set number of partitions to 2x the number of cores
 
     rdd = spark.sparkContext.parallelize(files, num_partitions)
     rows_rdd = rdd.flatMap(process_function)
-
     return rows_rdd
+
+
+def create_dq_instance():
+    return dq.DataQualityCounter()

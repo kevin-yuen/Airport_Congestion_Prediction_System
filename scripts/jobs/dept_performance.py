@@ -1,34 +1,13 @@
-import pyspark.sql.functions as F
-from config import ENV, CONFIG
-import scripts.utils.utils as u
-from functools import reduce
+import scripts.ingestions.dept_performance_raw as dept_performance_ingestion
+import scripts.utils.dq_ingestion_utils as idq
 
 
-def load_raw_dept_performance():
-    input_path = CONFIG[ENV]["airport_dept_performance"]
-    start_year = 2003
-    end_year = 2024
+def run_departure_performance_job(root_path, spark):
+    departure_performance_idq = idq.IngestionDataQuality()
 
-    dfs = []
-    new_columns = ['rank', 'airport_location', 'performance (%)']
+    csv_files, departure_performance_raw_df = dept_performance_ingestion.load_departure_performance_data(root_path, spark)
 
-    # load raw data by year (2003 - 2024)
-    for i in range(start_year, end_year+1):
-        temp_df = u.load_raw_data(input_path, f"Airport_OnTime_Departure_Performance_0101{i}.csv")
-        temp_df = temp_df.toDF(*new_columns)
-
-        # mark the year that the current data load corresponds to
-        temp_df = temp_df.withColumn('year', F.lit(i))
-
-        dfs.append(temp_df)
-
-    raw_df = reduce(lambda df1, df2: df1.unionByName(df2), dfs)
-
-    # remove header-as-row issue
-    raw_df = raw_df.filter(raw_df['rank'] != 'Rank')
-    
-    return raw_df
-
-
-dept_performance_raw = load_raw_dept_performance()
-dept_performance_raw.show(5)
+    # DQ ingestion: verify combined row counts of all csv files == raw dataset total row count
+    departure_performance_idq.verify_source_file_row_counts(csv_files)
+    departure_performance_idq.log_raw_df_count(departure_performance_raw_df)
+    departure_performance_idq.verify_total_row_counts()

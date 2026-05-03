@@ -1,4 +1,4 @@
-states = {
+STATES = {
     'AL': 'Alabama',
     'AK': 'Alaska',
     'AZ': 'Arizona',
@@ -50,4 +50,20 @@ states = {
     'WV': 'West Virginia',
     'WI': 'Wisconsin',
     'WY': 'Wyoming'
+}
+
+AIRPORT_COLUMN_MAPPING = {
+    "AIRPORT": "iata_code",
+    "DISPLAY_AIRPORT_NAME": "airport_name",
+    "DISPLAY_AIRPORT_CITY_NAME_FULL": "city",
+    "AIRPORT_STATE_FIPS": "state_fips",
+    "AIRPORT_STATE_CODE": "state_code",
+    "AIRPORT_STATE_NAME": "state_name",
+    "AIRPORT_COUNTRY_NAME": "country",
+    "AIRPORT_COUNTRY_CODE_ISO": "county_code",
+    "LATITUDE": "latitude",
+    "LONGITUDE": "longitude",
+    "AIRPORT_THRU_DATE": "close_date",
+    "AIRPORT_IS_CLOSED": "is_closed",
+    "AIRPORT_IS_LATEST": "is_latest"
 }

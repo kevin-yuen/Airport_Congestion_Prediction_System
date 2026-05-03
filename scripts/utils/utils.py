@@ -1,6 +1,6 @@
 import os
-import constants as c
-import scripts.utils.dq_ingestion_utils as dq
+import constants as C
+import pyspark.sql.functions as F
 
 
 def load_raw_data(file_path, spark, header=True):
@@ -34,7 +34,7 @@ def get_files_by_year(base_path, start_year, end_year):
 def get_files_by_state(base_path):
     csv_files = []
 
-    for k, _ in c.states.items():
+    for k, _ in C.STATES.items():
         folder = os.path.join(base_path, f"state={k}")
 
         for file in os.listdir(folder):
@@ -53,5 +53,12 @@ def parallelize_processing(files, process_function, spark):
     return rows_rdd
 
 
-def create_dq_instance():
-    return dq.DataQualityCounter()
+def rename_columns(df, col_mapping):
+    return df.withColumnsRenamed(col_mapping)
+
+
+def cast_column_type(df, cast_columns, cast_type):
+    for col in cast_columns:
+        df = df.withColumn(col, F.col(col).cast(cast_type))
+
+    return df

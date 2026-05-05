@@ -18,8 +18,8 @@ def main():
     tsa_wait_time_root_path = CONFIG[ENV]["tsa_wait_time"]
     weather_root_path = CONFIG[ENV]["weather"]
 
-    airport_job.run_airport_job(airport_root_path, spark)
-    # dept_performance_job.run_departure_performance_job(dept_performance_root_path, spark)
+    # airport_job.run_airport_job(airport_root_path, spark)
+    dept_performance_job.run_departure_performance_job(dept_performance_root_path, spark)
     # flight_performance_job.run_flight_performance_job(flight_performance_root_path, spark)
     # tsa_throughput_job.run_tsa_throughput_job(tsa_throughput_root_path, spark)
     # tsa_wait_time_job.run_tsa_wait_time_job(tsa_wait_time_root_path, spark)

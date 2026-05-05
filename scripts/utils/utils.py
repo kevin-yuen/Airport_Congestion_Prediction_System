@@ -53,6 +53,10 @@ def parallelize_processing(files, process_function, spark):
     return rows_rdd
 
 
+def select_columns(df, columns):
+    return df.select(*columns)
+
+
 def rename_columns(df, col_mapping):
     return df.withColumnsRenamed(col_mapping)
 
@@ -62,3 +66,7 @@ def cast_column_type(df, cast_columns, cast_type):
         df = df.withColumn(col, F.col(col).cast(cast_type))
 
     return df
+
+
+def remove_nulls(df, column):
+    return df.filter(F.isnotnull(F.col(column)))

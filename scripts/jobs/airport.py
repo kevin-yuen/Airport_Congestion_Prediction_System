@@ -28,7 +28,9 @@ def run_airport_job(root_path, spark):
     dq_pretransform.count_nulls(airport_raw_df)
 
     # Transformation: airport
-    airport_selected_df = airport_transformation.select_columns(airport_raw_df)
+    columns = [raw_col for raw_col, _ in c.AIRPORT_COLUMN_MAPPING.items()]
+    airport_selected_df = airport_transformation.select_columns(airport_raw_df, columns)
+    
     airport_renamed_df = airport_transformation.rename_columns(airport_selected_df, c.AIRPORT_COLUMN_MAPPING)
     airport_active_df = airport_transformation.get_active_airport(airport_renamed_df)
     airport_clean_city_df = airport_transformation.clean_city(airport_active_df)

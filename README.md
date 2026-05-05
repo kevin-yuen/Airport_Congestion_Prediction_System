@@ -35,3 +35,6 @@ python -m scripts.jobs.airport
 %     print("COUNT OF unmatched state != country:" + str(not_same_as_country.count()))
 
 %     return not_same_as_country
+
+# 2. AFTER TRANSFORMATION FOR AIRPORT_CLEANED
+# ensure iata_code is unique

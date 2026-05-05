@@ -67,3 +67,7 @@ AIRPORT_COLUMN_MAPPING = {
     "AIRPORT_IS_CLOSED": "is_closed",
     "AIRPORT_IS_LATEST": "is_latest"
 }
+
+DEPT_COLUMN_MAPPING = {
+    'performance (%)': 'ontime_departure_performance'
+}

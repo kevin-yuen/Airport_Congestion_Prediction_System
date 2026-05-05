@@ -18,5 +18,11 @@ def count_nulls(df):
     null_counts = df.select(cols).first().asDict()
 
     output = "\n".join(f"{col_name}: {count}" for col_name, count in null_counts.items())
-    print("\nNull Counts:\n" + output)
+    print(f"\nNull Counts:\n{output}\n")
 
+
+def get_max_and_min(df, column):
+    stats = df.select(F.max(column), F.min(column)).first()
+    max_value = stats[0]
+    min_value = stats[1]
+    print(f"\nmax: {max_value}\nmin: {min_value}\n")

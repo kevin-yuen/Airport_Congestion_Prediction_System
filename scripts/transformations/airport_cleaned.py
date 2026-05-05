@@ -1,12 +1,9 @@
-import constants as C
 import scripts.utils.utils as u
 import pyspark.sql.functions as F
 
 
-def select_columns(df):
-    columns = [raw_col for raw_col, _ in C.AIRPORT_COLUMN_MAPPING.items()]
-    airport_selected_df = df.select(*columns)
-    return airport_selected_df
+def select_columns(df, columns):
+    return u.select_columns(df, columns)
 
 
 def rename_columns(df, col_mapping):

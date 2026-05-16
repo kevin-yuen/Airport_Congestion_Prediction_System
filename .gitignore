@@ -1,4 +1,6 @@
 data/source/
+data/output/
 credentials
 venv311/
 venv*/
+*.crc

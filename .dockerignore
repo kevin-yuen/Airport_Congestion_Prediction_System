@@ -1,0 +1,23 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+.env/
+
+# Data (IMPORTANT)
+data/source/
+data/output/
+
+# Spark temp
+*.parquet
+*.crc
+*.log
+
+# Git
+.git
+.gitignore
+
+# OS files
+.DS_Store

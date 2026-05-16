@@ -63,6 +63,7 @@ AIRPORT_COLUMN_MAPPING = {
     "AIRPORT_COUNTRY_CODE_ISO": "county_code",
     "LATITUDE": "latitude",
     "LONGITUDE": "longitude",
+    "AIRPORT_START_DATE": "start_date",
     "AIRPORT_THRU_DATE": "close_date",
     "AIRPORT_IS_CLOSED": "is_closed",
     "AIRPORT_IS_LATEST": "is_latest"
@@ -70,4 +71,36 @@ AIRPORT_COLUMN_MAPPING = {
 
 DEPT_COLUMN_MAPPING = {
     'performance (%)': 'ontime_departure_performance'
+}
+
+FLIGHT_PERFORMANCE_COLUMN_MAPPING = {
+    'YEAR': 'year',
+    'MONTH': 'month',
+    'DAY_OF_WEEK': 'day_of_week',
+    'DAY_OF_MONTH': 'day_of_month',
+    'DEP_TIME_BLK': 'departure_time_block',
+    'ARR_TIME_BLK': 'arrival_time_block',
+    'OP_UNIQUE_CARRIER': 'carrier_code',
+    'OP_CARRIER_FL_NUM': 'flight_number',
+    'ORIGIN': 'origin_iata_code',
+    'DEST': 'destination_iata_code',
+    'ORIGIN_STATE_ABR': 'origin_state',
+    'DEST_STATE_ABR': 'destination_state',
+    'DEP_DELAY': 'departure_delay',
+    'DEP_DEL15': 'departure_delay_15min_flag',
+    'ARR_DELAY': 'arrival_delay',
+    'ARR_DEL15': 'arrival_delay_15min_flag',
+    'CARRIER_DELAY': 'carrier_delay',
+    'WEATHER_DELAY': 'weather_delay',
+    'NAS_DELAY': 'nas_delay',
+    'SECURITY_DELAY': 'security_delay',
+    'LATE_AIRCRAFT_DELAY': 'late_aircraft_delay',
+    'FLIGHTS': 'flight_count',
+    'TAXI_OUT': 'taxi_out_time',
+    'TAXI_IN': 'taxi_in_time',
+    'CRS_ELAPSED_TIME': 'scheduled_elapsed_time',
+    'ACTUAL_ELAPSED_TIME': 'actual_elapsed_time',
+    'DISTANCE': 'distance',
+    'CANCELLED': 'is_cancelled',
+    'DIVERTED': 'is_diverted'
 }

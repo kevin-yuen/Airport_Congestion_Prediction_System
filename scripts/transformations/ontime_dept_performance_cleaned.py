@@ -1,11 +1,10 @@
 import pyspark.sql.functions as F
 import constants as C
-import scripts.utils.utils as u
 from itertools import chain
 
 
 def remove_nulls(df, column):
-    return u.remove_nulls(df, column)
+    return df.filter(F.isnotnull(F.col(column)))
 
 
 def clean_airport_location(df):
@@ -34,9 +33,9 @@ def map_state_name(df):
     return df
 
 
-def rename_columns(df, col_mapping):
-    return u.rename_columns(df, col_mapping)
+def rename_and_select_columns(df, col_mapping, cols):
+    return df.withColumnsRenamed(col_mapping).select(*cols)
 
 
-def select_columns(df, columns):
-    return u.select_columns(df, columns)
+def get_data_by_year(df, column, start_year, end_year):
+    return df.filter((F.col(column) >= start_year) & (F.col(column) <= end_year))

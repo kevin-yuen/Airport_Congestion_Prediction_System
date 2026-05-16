@@ -1,13 +1,8 @@
-import scripts.utils.utils as u
 import pyspark.sql.functions as F
 
 
-def select_columns(df, columns):
-    return u.select_columns(df, columns)
-
-
-def rename_columns(df, col_mapping):
-    return u.rename_columns(df, col_mapping)
+def select_and_rename_columns(df, columns, column_mapping):
+    return df.select(*columns).withColumnsRenamed(column_mapping)
 
 
 def get_active_airport(df):
@@ -37,10 +32,27 @@ def clean_city(df):
     return airport_clean_city_df
 
 
-def get_active_BER(df):
+def get_active_BER_airport(df):
     # 2 active BER airports found. Hence, use close_date to determine the final active airport
     non_BER_df = df.filter((F.col('iata_code') != 'BER'))
     active_BER_df = df.filter((F.col('iata_code') == 'BER') & (F.isnull(F.col('close_date'))))
 
-    df = non_BER_df.unionByName(active_BER_df)
+    return non_BER_df.unionByName(active_BER_df)
+
+
+def clean_dates(df, columns):
+    for column in columns:
+        df = df.withColumn(f"{column}_ts", F.to_timestamp(column, "M/d/yyyy H:mm")) \
+                .withColumn(f"{column}_date", F.to_date(F.col(f"{column}_ts"))) \
+                .withColumn(f"{column}_year", F.year(F.col(f"{column}_date"))) \
+                .withColumn(f"{column}_year_month", F.col(f"{column}_ts").substr(1, 7))
+
     return df
+
+
+def get_data_by_year(df, max_year):
+    return df.filter(F.col('start_date_year') <= max_year)
+
+
+def drop_and_rename_columns(df, columns, column_mapping):
+    return df.drop(*columns).withColumnsRenamed(column_mapping)

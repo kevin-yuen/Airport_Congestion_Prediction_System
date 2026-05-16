@@ -8,6 +8,9 @@ def get_spark():
             "spark.jars.packages",
             "org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262"
         ) \
+        .config("spark.driver.memory", "12g") \
+        .config("spark.executor.memory", "12g") \
+        .config("spark.sql.shuffle.partitions", "8") \
         .config("spark.hadoop.fs.s3a.impl",
                 "org.apache.hadoop.fs.s3a.S3AFileSystem") \
         .config("spark.hadoop.fs.s3a.aws.credentials.provider",
@@ -19,3 +22,7 @@ def get_spark():
         .getOrCreate()
 
     return spark
+
+        # .config("spark.hadoop.fs.file.impl", "org.apache.hadoop.fs.LocalFileSystem") \
+        # .config("spark.hadoop.fs.file.impl.disable.cache", "true") \
+        # .config("spark.sql.warehouse.dir", "file:///tmp") \

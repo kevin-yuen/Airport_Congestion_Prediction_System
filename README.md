@@ -38,3 +38,6 @@ python -m scripts.jobs.airport
 
 # 2. AFTER TRANSFORMATION FOR AIRPORT_CLEANED
 # ensure iata_code is unique
+
+# 3. For pdf ingestion engineer decision
+# To ensure reproducibility and stable execution within local infrastructure constraints, the PDF ingestion pipeline intentionally processes a representative subset of 150 pages per PDF document during demonstration runs. The architecture supports full-document processing, but bounded extraction was used to balance runtime efficiency, resource utilization, and iterative development speed while still preserving sufficient data volume for downstream analytics and machine learning tasks.

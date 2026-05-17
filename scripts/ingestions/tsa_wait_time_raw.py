@@ -7,9 +7,9 @@ def verify_wait_time_row_counts(pd_df, spark_df):
     spark_df_count = spark_df.count()
 
     if pd_df_count == spark_df_count:
-        print(f"""Row count check passed for TSA wait time data!\nsource file: {pd_df_count}\nraw dataset: {spark_df_count}\n""")
+        print(f"""[INFO] Row count check passed for TSA wait time data!\nsource file: {pd_df_count}\nraw dataset: {spark_df_count}\n""")
     else:
-        raise ValueError(f"""Row count check failed for TSA wait time data!\nsource file: ({pd_df_count})\nraw dataset: ({spark_df_count})""")
+        raise ValueError(f"""[INFO] Row count check failed for TSA wait time data!\nsource file: ({pd_df_count})\nraw dataset: ({spark_df_count})""")
 
 
 def __build_dynamic_columns_schema():

@@ -41,3 +41,30 @@ python -m scripts.jobs.airport
 
 # 3. For pdf ingestion engineer decision
 # To ensure reproducibility and stable execution within local infrastructure constraints, the PDF ingestion pipeline intentionally processes a representative subset of 150 pages per PDF document during demonstration runs. The architecture supports full-document processing, but bounded extraction was used to balance runtime efficiency, resource utilization, and iterative development speed while still preserving sufficient data volume for downstream analytics and machine learning tasks.
+
+----------------------------------------------
+
+WEATHER DATA
+
+Null Counts:
+CLDD: 14756
+DATE: 0
+ELEVATION: 0
+HTDD: 14756
+LATITUDE: 0
+LONGITUDE: 0
+NAME: 0
+PRCP: 6367
+SNOW: 73823
+STATION: 0
+TAVG: 14122
+TMAX: 12523
+TMIN: 13192
+state: 0
+
+ETL Pipeline - keeping nulls because they represent unavailable measurements rather than ingestion errors
+
+In ML preprocessing - Impute with:
+median
+station-level average
+state-level average

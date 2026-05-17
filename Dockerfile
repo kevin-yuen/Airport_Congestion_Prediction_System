@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir \
     numpy==1.24.4 \
     pdfplumber==0.10.3 \
     pdfminer.six==20231228 \
-    openpyxl==3.1.2
+    openpyxl==3.1.2 \
+    xlrd==2.0.1
 
 CMD ["python3", "-m", "main"]

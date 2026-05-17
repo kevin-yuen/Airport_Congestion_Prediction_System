@@ -47,17 +47,38 @@ def get_files_by_year(base_path, start_year, end_year):
     return pdf_files, excel_files, csv_files
 
 
-def get_files_by_state(base_path):
-    csv_files = []
+def get_file_by_state(base_path):
+    # print(base_path)
+    partition_folder_paths = glob.glob(os.path.join(base_path, "*"))
 
-    for k, _ in C.STATES.items():
-        folder = os.path.join(base_path, f"state={k}")
+    if partition_folder_paths:
+        partition_key = partition_folder_paths[0].split("=")[-1]
+        
+        partition_folder = f"state={partition_key}"
+        folder_path = os.path.join(base_path, partition_folder)
+        state_file = glob.glob(os.path.join(folder_path, "*"))[0]
+    print(f"STATE FILE: {state_file}")
+    return state_file
 
-        for file in os.listdir(folder):
-            if file.endswith(".csv"):
-                csv_files.append(os.path.join(folder, file))
 
-    return csv_files
+
+    # # print(partition_folder_paths)
+    # partition_keys = [partition_fp.split("=")[-1] for partition_fp in partition_folder_paths]
+
+    # csv_files = []
+
+    # for partition_key in partition_keys:
+    #     partition_folder = f"state={partition_key}"
+    #     folder_path = os.path.join(base_path, partition_folder)
+    #     current_state_files = glob.glob(os.path.join(folder_path, "*"))
+
+    #     if current_state_files:
+    #         csv_files.extend(current_state_files)
+    
+    # if not csv_files:
+    #     raise FileNotFoundError("[WARNING] No files found.")
+
+    # return csv_files
 
 
 def parallelize_processing(files, process_function, spark):

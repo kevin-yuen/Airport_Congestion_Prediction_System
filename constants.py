@@ -104,3 +104,29 @@ FLIGHT_PERFORMANCE_COLUMN_MAPPING = {
     'CANCELLED': 'is_cancelled',
     'DIVERTED': 'is_diverted'
 }
+
+WEATHER_REQUIRED_COLUMNS = [
+    "STATION",
+    "DATE",
+    "LATITUDE",
+    "LONGITUDE",
+    "ELEVATION",
+    "NAME",
+    "PRCP",
+    "SNOW",
+    "TAVG",
+    "TMAX",
+    "TMIN",
+    "CLDD",
+    "HTDD"
+]
+
+WAIT_TIME_COLUMN_INDEX = {
+    "col_start": 0,
+    "col_end": 9,
+    "col_stop": 126,
+    "year_start": 2015,
+    "year_end": 2006,
+    "month_start": 12,
+    "month_end": 1
+}

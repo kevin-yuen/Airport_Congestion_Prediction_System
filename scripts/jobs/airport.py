@@ -7,7 +7,7 @@ import scripts.transformations.airport_cleaned as airport_transformation
 import scripts.utils.dq_transformation_utils as dq_transformation
 
 
-def run_airport_job(incoming_path, archived_path, spark):
+def run_airport_job(incoming_path, archived_path, transformed_csv_path, spark):
     # Ingestion
     airport_idq = idq.IngestionDataQuality()
     csv_files, airport_raw_df = airport_ingestion.load_airport_data(incoming_path, spark)
@@ -70,6 +70,11 @@ def run_airport_job(incoming_path, archived_path, spark):
     dq_transformation.check_column_uniqueness(airport_cleaned, ['iata_code'])
     # count nulls
     dq_transformation.check_null_counts(airport_cleaned)
+
+    airport_cleaned.write.format("csv") \
+    .mode("overwrite") \
+    .option("header", "true") \
+    .save(transformed_csv_path)
 
     airport_cleaned.show(10)
 

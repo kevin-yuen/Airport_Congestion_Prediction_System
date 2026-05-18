@@ -103,7 +103,7 @@ def move_file_to_archived(file_path: str, archived_folder: str):
     print(f"File archived to: {destination_path}")
 
 
-def _path_exists(spark, path: str) -> bool:
+def path_exists(spark, path: str) -> bool:
     if path.startswith("s3a://"):
         hadoop_conf = spark._jsc.hadoopConfiguration()
         fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(hadoop_conf)
@@ -175,7 +175,7 @@ def archive_partition(
 
 
 def incremental_updates(spark, incoming_df, parquet_path, partition, affected_partitions):
-    if _path_exists(spark, parquet_path):
+    if path_exists(spark, parquet_path):
         existing_df = (
             spark.read
             .parquet(parquet_path)

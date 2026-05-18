@@ -9,6 +9,7 @@ import scripts.jobs.flight_performance as flight_performance_job
 import scripts.jobs.tsa_throughput as tsa_throughput_job
 import scripts.jobs.tsa_wait_time as tsa_wait_time_job
 import scripts.jobs.weather as weather_job
+import scripts.jobs.airport_weather_mapping as aw_mapping_job
 
 
 def _generate_folder_paths(root_path):
@@ -51,11 +52,11 @@ def main():
 
 
     # run pipelines
-    airport_job.run_airport_job(
-        airport_incoming_path, 
-        airport_archived_path, 
-        airport_transformed_csv_path, 
-        spark)
+    # airport_job.run_airport_job(
+    #     airport_incoming_path, 
+    #     airport_archived_path, 
+    #     airport_transformed_csv_path, 
+    #     spark)
 
     # dept_performance_job.run_departure_performance_job(
     #     dept_performance_incoming_path, 
@@ -88,6 +89,12 @@ def main():
     #     spark,
     #     weather_raw_parquet_path,
     #     weather_transformed_parquet_path)
+
+    aw_mapping_job.run_airport_weather_mapping_job(
+        spark,
+        airport_transformed_csv_path,
+        weather_transformed_parquet_path
+    )
 
 
 if __name__ == "__main__":

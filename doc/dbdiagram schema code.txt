@@ -1,0 +1,168 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table airport_cleaned {
+  iata_code string pk
+  airport_name string
+  city string
+  state_fips integer
+  state_code string
+  state_name string
+  country string
+  county_code string
+  latitude float
+  longitude float
+  is_closed integer
+  is_latest integer
+  start_year_month string
+  close_year_month string
+}
+
+Table ontime_dept_performance_cleaned {
+  iata_code string pk
+  year integer pk
+  state_code string
+  state_name string
+  city_name string
+  ontime_departure_performance double
+}
+
+Table flight_performance_cleaned {
+  flight_pk string pk
+  year integer
+  month integer
+  day_of_week integer
+  day_of_month integer
+  departure_time_block string
+  arrival_time_block string
+  carrier_code string
+  flight_number integer
+  origin_iata_code string
+  destination_iata_code string
+  origin_state string
+  destination_state string
+  departure_delay double
+  departure_delay_15min_flag bool
+  arrival_delay double
+  arrival_delay_15min_flag bool
+  carrier_delay double
+  weather_delay double
+  nas_delay double
+  security_delay double
+  late_aircraft_delay double
+  flight_count integer
+  taxi_out_time double
+  taxi_in_time double
+  scheduled_elapsed_time double
+  actual_elapsed_time double
+  distance double
+  is_cancelled bool
+  is_diverted bool
+}
+
+Table tsa_throughput_cleaned {
+  iata_code string pk
+  checkpoint string pk
+  date string pk
+  airport string
+  city string
+  state_code string
+  state_name string
+  year integer
+  passenger_count long
+}
+
+Table tsa_wait_time_cleaned {
+  iata_code string pk
+  checkpoint string pk
+  month integer pk
+  year integer pk
+  airport string
+  avg_wait_time_minutes integer
+}
+
+Table weather_cleaned {
+  station_id string pk
+  year integer pk
+  month integer pk
+  latitude double
+  longitude	double
+  station_name string
+  state_code string
+  state_name string
+  country_code string
+  avg_temperature	double
+  max_temperature	double
+  min_temperature	double
+  total_precipitation	double
+  total_snowfall double
+  cooling_degree_days	double
+  heating_degree_days	double
+}
+
+Table airport_weather_mapping {
+  iata_code	string pk
+  station_id string pk
+  distance_miles double
+}
+
+Table airport_congestion_gold {
+  iata_code	string pk
+  year integer pk
+  month	integer pk
+  total_flights	integer
+  avg_departure_delay	double
+  avg_arrival_delay	double
+  delay_rate double
+  cancellation_rate	double
+  avg_carrier_delay	double
+  avg_weather_delay	double
+  avg_nas_delay	double
+  avg_security_delay double
+  avg_late_aircraft_delay	double
+  avg_taxi_out_time	double
+  avg_taxi_in_time double
+  avg_total_taxi_time	double
+  total_passenger_count	integer
+  avg_wait_time_minutes	double
+  passenger_to_flight_ratio	double
+  avg_temperature	double
+  total_precipitation	double
+  total_snowfall double
+}
+
+// many-to-one
+Ref: flight_performance_cleaned.origin_iata_code > airport_cleaned.iata_code
+Ref: flight_performance_cleaned.destination_iata_code > airport_cleaned.iata_code
+Ref: tsa_throughput_cleaned.iata_code > airport_cleaned.iata_code
+Ref: tsa_wait_time_cleaned.iata_code > airport_cleaned.iata_code
+
+Ref: weather_cleaned.station_id > airport_weather_mapping.station_id
+Ref: airport_weather_mapping.iata_code > airport_cleaned.iata_code
+
+Ref: airport_congestion_gold.iata_code > airport_cleaned.iata_code
+
+
+// Ref: users.id < airport_cleaned.following_user_id
+
+// Ref: users.id < airport_cleaned.followed_user_id
+
+// Records users(id, username, role) {
+//   0, 'Alice', 'admin'
+//   1, 'Bob', 'moderator'
+//   2, 'Candice', 'moderator'
+//   3, 'David', 'member'
+// }
+
+// Records airport_cleaned(following_user_id, followed_user_id, created_at) {
+//   1, 0, '2026-01-01'
+//   3, 2, '2026-02-28'
+// }
+
+// Records posts(id, title, user_id) {
+//   0, 'Welcome to the forum!', 0
+//   1, 'Guidelines', 1
+//   2, 'Hello all!', 3
+// }
+
+

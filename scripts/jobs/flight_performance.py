@@ -67,6 +67,12 @@ def run_flight_performance_incremental_job(
         .withColumn(
             "flight_count",
             F.col("flight_count").cast("integer"))
+        .withColumn(
+            "departure_delay_15min_flag",
+            F.col("departure_delay_15min_flag").cast("boolean"))
+        .withColumn(
+            "arrival_delay_15min_flag",
+            F.col("arrival_delay_15min_flag").cast("boolean"))
     )
     
     ## impute missing values
@@ -123,6 +129,8 @@ def run_flight_performance_incremental_job(
     # DQ post-transform
     print("\n--------------- DQ AFTER TRANSFORMATION ---------------\n")
     fp_cleaned.printSchema()
+
+    fp_cleaned.show(20)
     
     print(f"Row count: {str(fp_cleaned.count())}")
 

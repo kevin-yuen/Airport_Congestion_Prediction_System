@@ -53,6 +53,11 @@ def run_departure_performance_job(incoming_path, archived_path, spark):
         2015
     )
 
+    ontime_dept_performance_cleaned = ontime_dept_performance_cleaned.withColumn(
+        "year",
+        F.col("year").cast("integer")
+    )
+
 
     # DQ post-transform
     print("\n--------------- DQ AFTER TRANSFORMATION ---------------\n")
@@ -69,6 +74,9 @@ def run_departure_performance_job(incoming_path, archived_path, spark):
         (F.isnull(F.col('rank')))).show()
     
     ontime_dept_performance_cleaned.select('year').distinct().show()
+
+    # final schema check
+    ontime_dept_performance_cleaned.printSchema()
 
     # is (iata_code + year) unique?
     print(f"Row count after transformation (2013-2015): {ontime_dept_performance_cleaned.count()}")     # 87

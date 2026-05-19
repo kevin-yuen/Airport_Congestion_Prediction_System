@@ -70,6 +70,8 @@ def run_airport_job(incoming_path, archived_path, transformed_csv_path, spark):
     dq_transformation.check_column_uniqueness(airport_cleaned, ['iata_code'])
     # count nulls
     dq_transformation.check_null_counts(airport_cleaned)
+    # final schema check
+    airport_cleaned.printSchema()
 
     airport_cleaned.write.format("csv") \
     .mode("overwrite") \

@@ -56,10 +56,11 @@ def run_airport_weather_mapping_job(
     print(f"[SUCCESS] Airport-weather mapping created.")
 
     print(f"[INFO] Total mappings: {mapping_df.count()}")
+
+    mapping_df.printSchema()
+    mapping_df.show(50)
     # ---------------------------------------------------
     # [END] DQ CHECK AFTER TRANSFORMATION
     # ---------------------------------------------------
-
-    mapping_df.show(50)
 
     return mapping_df

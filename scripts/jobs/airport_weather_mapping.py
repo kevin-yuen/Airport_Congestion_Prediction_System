@@ -7,7 +7,8 @@ import pyspark.sql.functions as F
 def run_airport_weather_mapping_job(
     spark,
     airport_cleaned_path: str,
-    weather_cleaned_path: str
+    weather_cleaned_path: str,
+    transformed_csv_path: str
 ):
     # ---------------------------------------------------
     # [START] INGESTION
@@ -62,5 +63,10 @@ def run_airport_weather_mapping_job(
     # ---------------------------------------------------
     # [END] DQ CHECK AFTER TRANSFORMATION
     # ---------------------------------------------------
+
+    mapping_df.write.options(
+        header='True', 
+        delimiter=',').csv(transformed_csv_path)
+    print(f"[SUCCESS] Parquet written to: {transformed_csv_path}")
 
     return mapping_df

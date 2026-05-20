@@ -112,7 +112,7 @@ def path_exists(spark, path: str) -> bool:
         return os.path.exists(path)
 
 
-def _write_partitioned_parquet(
+def write_partitioned_parquet(
     spark,
     df: DataFrame,
     output_path: str,
@@ -192,5 +192,5 @@ def incremental_updates(spark, incoming_df, parquet_path, partition, affected_pa
     else:
         merged_df = incoming_df
     
-    _write_partitioned_parquet(spark, merged_df, parquet_path, [partition])
+    write_partitioned_parquet(spark, merged_df, parquet_path, [partition])
 

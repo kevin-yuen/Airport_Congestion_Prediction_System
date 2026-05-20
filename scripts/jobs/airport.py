@@ -7,7 +7,12 @@ import scripts.transformations.airport_cleaned as airport_transformation
 import scripts.utils.dq_transformation_utils as dq_transformation
 
 
-def run_airport_job(incoming_path, archived_path, transformed_csv_path, spark):
+def run_airport_job(
+        incoming_path,
+        archived_path,
+        transformed_csv_path,
+        spark
+    ):
     # Ingestion
     airport_idq = idq.IngestionDataQuality()
     csv_files, airport_raw_df = airport_ingestion.load_airport_data(incoming_path, spark)

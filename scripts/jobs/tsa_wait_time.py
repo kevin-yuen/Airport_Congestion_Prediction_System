@@ -6,7 +6,11 @@ import scripts.utils.utils as u
 import pyspark.sql.functions as F
 import os
 
-def run_tsa_wait_time_job(incoming_path, archived_path, spark):
+def run_tsa_wait_time_job(
+        incoming_path,
+        archived_path,
+        transformed_parquet_path,
+        spark):
     # ---------------------------------------------------
     # [START] INGESTION
     # ---------------------------------------------------
@@ -101,6 +105,15 @@ def run_tsa_wait_time_job(incoming_path, archived_path, spark):
     df_cleaned.printSchema()
     # null check
     dq_transformation.check_null_counts(df_cleaned)
+    # row count check
+    print(f"Row count: {df_cleaned.count()}")
     # ---------------------------------------------------
     # [END] DQ CHECK AFTER TRANSFORMATION
     # ---------------------------------------------------
+
+    u.write_partitioned_parquet(
+        spark,
+        df_cleaned,
+        transformed_parquet_path,
+        ["year"]
+    )

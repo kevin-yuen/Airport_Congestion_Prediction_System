@@ -82,9 +82,17 @@ LOCAL_CONFIG = {
         TRANSFORMED_ROOT_PATH,
         "tsa_customer_throughput"
     ),
+    "tsa_wait_time_transformed_parquet_path": os.path.join(
+        TRANSFORMED_ROOT_PATH,
+        "tsa_wait_time"
+    ),
     "weather_transformed_parquet_path": os.path.join(
         TRANSFORMED_ROOT_PATH,
         "weather_throughput"
+    ),
+    "gold_transformed_parquet_path": os.path.join(
+        TRANSFORMED_ROOT_PATH,
+        "airport_congestion_gold"
     ),
 
     # transformed csv output
@@ -92,6 +100,14 @@ LOCAL_CONFIG = {
         TRANSFORMED_ROOT_PATH,
         "airport"
     ),
+    "airport_departure_performance_transformed_csv_path": os.path.join(
+        TRANSFORMED_ROOT_PATH,
+        "airport_departure_performance"
+    ),
+    "airport_weather_mapping_transformed_csv_path": os.path.join(
+        TRANSFORMED_ROOT_PATH,
+        "airport_weather_mapping"
+    )
 }
 
 
@@ -135,8 +151,24 @@ PROD_CONFIG = {
     "tsa_throughput_transformed_parquet_path":
         "s3a://airport-congestion-prediction-system/output/transformed/tsa_customer_throughput/",
 
+    "tsa_wait_time_transformed_parquet_path":
+        "s3a://airport-congestion-prediction-system/output/transformed/tsa_wait_time/",
+
     "weather_transformed_parquet_path":
-        "s3a://airport-congestion-prediction-system/output/transformed/weather/"
+        "s3a://airport-congestion-prediction-system/output/transformed/weather/",
+    
+    "gold_transformed_parquet_path":
+        "s3a://airport-congestion-prediction-system/output/transformed/airport_congestion_gold/",
+
+    # transformed csv
+    "airport_transformed_csv_path":
+        "s3a://airport-congestion-prediction-system/output/transformed/airport/",
+
+    "airport_departure_performance_transformed_csv_path":
+        "s3a://airport-congestion-prediction-system/output/transformed/airport_departure_performance/",
+
+    "airport_weather_mapping_transformed_csv_path":
+        "s3a://airport-congestion-prediction-system/output/transformed/airport_weather_mapping/",
 }
 
 

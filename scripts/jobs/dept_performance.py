@@ -7,7 +7,12 @@ import scripts.transformations.ontime_dept_performance_cleaned as dept_performan
 import scripts.utils.dq_transformation_utils as dq_transformation
 
 
-def run_departure_performance_job(incoming_path, archived_path, spark):
+def run_departure_performance_job(
+        incoming_path,
+        archived_path,
+        transformed_csv_path,
+        spark
+    ):
     # Ingestion
     departure_performance_idq = idq.IngestionDataQuality()
     csv_files, departure_performance_raw_df = dept_performance_ingestion.load_departure_performance_data(
@@ -81,6 +86,11 @@ def run_departure_performance_job(incoming_path, archived_path, spark):
     # is (iata_code + year) unique?
     print(f"Row count after transformation (2013-2015): {ontime_dept_performance_cleaned.count()}")     # 87
     ontime_dept_performance_cleaned.select(F.count_distinct('iata_code', 'year')).show()    # 87
+
+    ontime_dept_performance_cleaned.write.format("csv") \
+    .mode("overwrite") \
+    .option("header", "true") \
+    .save(transformed_csv_path)
 
     ontime_dept_performance_cleaned.show(10)
 

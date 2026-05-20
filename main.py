@@ -10,6 +10,7 @@ import scripts.jobs.tsa_throughput as tsa_throughput_job
 import scripts.jobs.tsa_wait_time as tsa_wait_time_job
 import scripts.jobs.weather as weather_job
 import scripts.jobs.airport_weather_mapping as aw_mapping_job
+import scripts.jobs.airport_congestion_gold as gold_job
 
 
 def _generate_folder_paths(root_path):
@@ -28,8 +29,9 @@ def main():
     airport_incoming_path, airport_archived_path = _generate_folder_paths(airport_source_path)
     airport_transformed_csv_path = env_config["airport_transformed_csv_path"]
 
-    dept_performance_source_path = env_config["airport_departure_performance_source_path"]
-    dept_performance_incoming_path, dept_performance_archived_path = _generate_folder_paths(dept_performance_source_path)
+    airport_departure_performance_source_path = env_config["airport_departure_performance_source_path"]
+    airport_departure_performance_incoming_path, airport_departure_performance_archived_path = _generate_folder_paths(airport_departure_performance_source_path)
+    airport_departure_performance_transformed_csv_path = env_config["airport_departure_performance_transformed_csv_path"]
 
     flight_performance_source_path = env_config["flight_performance_source_path"]
     flight_performance_incoming_path, flight_performance_archived_path = _generate_folder_paths(flight_performance_source_path)
@@ -43,12 +45,17 @@ def main():
 
     tsa_wait_time_source_path = env_config["tsa_wait_time_source_path"]
     tsa_wait_time_incoming_path, tsa_wait_time_archived_path = _generate_folder_paths(tsa_wait_time_source_path)
+    tsa_wait_time_transformed_parquet_path = env_config["tsa_wait_time_transformed_parquet_path"]
 
     weather_source_path = env_config["weather_source_path"]
     weather_incoming_path = os.path.join(weather_source_path, "incoming/")
     weather_archived_path = os.path.join(weather_source_path, "incoming_archived/")
     weather_raw_parquet_path = env_config["weather_raw_parquet_path"]
     weather_transformed_parquet_path = env_config["weather_transformed_parquet_path"]
+
+    airport_weather_mapping_transformed_csv_path = env_config["airport_weather_mapping_transformed_csv_path"]
+
+    airport_congestion_gold_transformed_parquet_path = env_config["gold_transformed_parquet_path"]
 
 
     # run pipelines
@@ -59,8 +66,9 @@ def main():
     #     spark)
 
     # dept_performance_job.run_departure_performance_job(
-    #     dept_performance_incoming_path, 
-    #     dept_performance_archived_path, 
+    #     airport_departure_performance_incoming_path, 
+    #     airport_departure_performance_archived_path,
+    #     airport_departure_performance_transformed_csv_path,
     #     spark)
     
     # flight_performance_job.run_flight_performance_incremental_job(
@@ -80,6 +88,7 @@ def main():
     # tsa_wait_time_job.run_tsa_wait_time_job(
     #     tsa_wait_time_incoming_path,
     #     tsa_wait_time_archived_path,
+    #     tsa_wait_time_transformed_parquet_path,
     #     spark)
 
     # weather_job.run_tsa_weather_incremental_job(
@@ -90,10 +99,21 @@ def main():
     #     weather_raw_parquet_path,
     #     weather_transformed_parquet_path)
 
-    aw_mapping_job.run_airport_weather_mapping_job(
+    # aw_mapping_job.run_airport_weather_mapping_job(
+    #     spark,
+    #     airport_transformed_csv_path,
+    #     weather_transformed_parquet_path,
+    #     airport_weather_mapping_transformed_csv_path
+    # )
+
+    gold_job.run_airport_congestion_gold_job(
         spark,
-        airport_transformed_csv_path,
-        weather_transformed_parquet_path
+        flight_performance_transformed_parquet_path,
+        tsa_throughput_transformed_parquet_path,
+        tsa_wait_time_transformed_parquet_path,
+        weather_transformed_parquet_path,
+        airport_weather_mapping_transformed_csv_path,
+        airport_congestion_gold_transformed_parquet_path
     )
 
 

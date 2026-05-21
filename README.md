@@ -64,6 +64,21 @@ state: 0
 
 ETL Pipeline - keeping nulls because they represent unavailable measurements rather than ingestion errors
 
+--------------------------------
+
+| Dataset                         | Strategy     
+| ------------------------------- | ------------ 
+| flight_performance_cleaned      | Incremental  
+| tsa_throughput_cleaned          | Incremental  
+| weather_cleaned                 | Incremental  
+| airport_cleaned                 | Full refresh 
+| ontime_dept_performance_cleaned | Full refresh 
+| tsa_wait_time_cleaned           | Full refresh 
+| airport_weather_mapping         | Full refresh 
+| airport_congestion_gold         | Full refresh 
+
+---------------------------------------------
+
 In ML preprocessing - Impute with:
 median
 station-level average

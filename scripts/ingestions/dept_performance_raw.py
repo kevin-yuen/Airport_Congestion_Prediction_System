@@ -1,13 +1,13 @@
 import pyspark.sql.functions as F
 import scripts.utils.utils as u
-import glob
 from functools import reduce
 
     
 def load_departure_performance_data(incoming_path, spark):
     dfs = []
     new_columns = ['rank', 'airport_location', 'performance (%)']
-    csv_files = glob.glob(f"{incoming_path}Airport_OnTime_Departure_Performance_*.csv")
+    # csv_files = glob.glob(f"{incoming_path}Airport_OnTime_Departure_Performance_*.csv")
+    csv_files = u.list_files(spark, incoming_path, ".csv")
 
     if not csv_files:
         raise FileNotFoundError(f"No departure performance files found in: {incoming_path}")

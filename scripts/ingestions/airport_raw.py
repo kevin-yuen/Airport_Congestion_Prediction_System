@@ -1,14 +1,21 @@
 import scripts.utils.utils as u
-import glob
 
 
 def load_airport_data(incoming_path, spark):
-    csv_files = glob.glob(f"{incoming_path}T_MASTER_COORD.csv")
+    csv_files = u.list_files(
+        spark,
+        incoming_path,
+        ".csv"
+    )
 
-    if not csv_files:
-        raise FileNotFoundError(f"No airport files found in: {incoming_path}")
+    airport_files = [fp for fp in csv_files if "T_MASTER_COORD.csv" in fp]
+
+    if not airport_files:
+        raise FileNotFoundError("Airport file not found")
+
+    airport_file_path = airport_files[0]
 
     # load the master raw airport coordinates data into spark dataset
-    raw_df = u.load_raw_data(csv_files[0], spark)
-
-    return csv_files, raw_df
+    raw_df = u.load_raw_data(airport_file_path, spark)
+   
+    return airport_files, raw_df

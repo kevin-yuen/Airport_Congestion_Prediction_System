@@ -5,7 +5,6 @@ import glob
 import pandas as pd
 
 import scripts.ingestions.weather_raw as w_ingestion
-import scripts.transformations.tsa_throughput_cleaned as tp_transformation
 import scripts.utils.dq_transformation_utils as dq_transformation
 import scripts.utils.utils as u
 import constants as c

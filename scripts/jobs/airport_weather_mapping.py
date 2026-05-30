@@ -64,9 +64,11 @@ def run_airport_weather_mapping_job(
     # [END] DQ CHECK AFTER TRANSFORMATION
     # ---------------------------------------------------
 
-    mapping_df.write.options(
-        header='True', 
-        delimiter=',').csv(transformed_csv_path)
+    mapping_df.write \
+        .mode("overwrite") \
+        .option("header", "true") \
+        .option("delimiter", ",") \
+        .csv(transformed_csv_path)
     print(f"[SUCCESS] Parquet written to: {transformed_csv_path}")
 
     return mapping_df

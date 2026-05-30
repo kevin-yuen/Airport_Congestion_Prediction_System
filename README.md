@@ -71,11 +71,19 @@ ETL Pipeline - keeping nulls because they represent unavailable measurements rat
 | flight_performance_cleaned      | Incremental  
 | tsa_throughput_cleaned          | Incremental  
 | weather_cleaned                 | Incremental  
-| airport_cleaned                 | Full refresh 
-| ontime_dept_performance_cleaned | Full refresh 
-| tsa_wait_time_cleaned           | Full refresh 
-| airport_weather_mapping         | Full refresh 
-| airport_congestion_gold         | Full refresh 
+| airport_cleaned                 | Full refresh
+| ontime_dept_performance_cleaned | Full refresh
+| tsa_wait_time_cleaned           | Full refresh
+| airport_weather_mapping         | Full refresh
+| airport_congestion_gold         | Full refresh
+
+-------------------------------------------
+
+![alt text](image-1.png)
+
+----------------------------------------------
+
+Amazon S3 was used as the centralized storage repository for raw source files and finalized parquet outputs. Smaller ETL workloads were processed directly against S3 using Spark cloud-native IO integration, while larger incremental workloads involving heavy partition-level transformations and merge operations were processed locally to optimize single-node execution efficiency before persisting finalized parquet datasets back into centralized S3 storage.
 
 ---------------------------------------------
 

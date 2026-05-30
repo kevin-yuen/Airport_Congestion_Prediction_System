@@ -77,17 +77,3 @@ def ingest_data(
 
     cross_df = airport_selected_df.crossJoin(weather_selected_df)
     return cross_df
-
-
-# ---------------------------------------------------
-# EXAMPLE USAGE
-# ---------------------------------------------------
-# mapping_df = create_airport_weather_mapping(
-#     spark,
-#     airport_cleaned_path=
-#         "data/output/airport/cleaned",
-#     weather_cleaned_path=
-#         "data/output/weather/cleaned"
-# )
-
-# mapping_df.show(20, truncate=False)

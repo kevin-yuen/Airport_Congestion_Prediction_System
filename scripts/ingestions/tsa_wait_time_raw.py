@@ -19,6 +19,9 @@ def __build_dynamic_columns_schema():
 def load_tsa_wait_time_data(root_path, spark):
     file_path = root_path + 'tsa-wait-times-january-2006-december-2015.xls'
     
+    if file_path.startswith("s3a://"):
+        file_path = file_path.replace("s3a://", "s3://", 1)
+
     pd_df = pd.read_excel(file_path, skiprows=3, header=None, engine='xlrd')
 
     schema = [StructField('iata_code', StringType(), True), \

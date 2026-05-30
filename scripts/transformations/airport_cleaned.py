@@ -1,12 +1,12 @@
 import pyspark.sql.functions as F
 
 
-def select_and_rename_columns(df, columns, column_mapping):
-    return df.select(*columns).withColumnsRenamed(column_mapping)
+# def select_and_rename_columns(df, columns, column_mapping):
+#     return df.select(*columns).withColumnsRenamed(column_mapping)
 
 
-def get_active_airport(df):
-    return df.filter((df['is_closed'] == 0) & (df['is_latest'] == 1))
+# def get_active_airport(df):
+#     return df.filter((df['is_closed'] == 0) & (df['is_latest'] == 1))
 
 
 def clean_city(df):
@@ -32,12 +32,12 @@ def clean_city(df):
     return airport_clean_city_df
 
 
-def get_active_BER_airport(df):
+def get_active_ber_airport(df):
     # 2 active BER airports found. Hence, use close_date to determine the final active airport
-    non_BER_df = df.filter((F.col('iata_code') != 'BER'))
-    active_BER_df = df.filter((F.col('iata_code') == 'BER') & (F.isnull(F.col('close_date'))))
+    non_ber_df = df.filter((F.col('iata_code') != 'BER'))
+    active_ber_df = df.filter((F.col('iata_code') == 'BER') & (F.isnull(F.col('close_date'))))
 
-    return non_BER_df.unionByName(active_BER_df)
+    return non_ber_df.unionByName(active_ber_df)
 
 
 def clean_dates(df, columns):
@@ -50,9 +50,9 @@ def clean_dates(df, columns):
     return df
 
 
-def get_data_by_year(df, max_year):
-    return df.filter(F.col('start_date_year') <= max_year)
+# def get_data_by_year(df, max_year):
+#     return df.filter(F.col('start_date_year') <= max_year)
 
 
-def drop_and_rename_columns(df, columns, column_mapping):
-    return df.drop(*columns).withColumnsRenamed(column_mapping)
+# def drop_and_rename_columns(df, columns, column_mapping):
+#     return df.drop(*columns).withColumnsRenamed(column_mapping)

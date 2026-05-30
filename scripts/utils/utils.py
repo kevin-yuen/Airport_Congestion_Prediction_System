@@ -1,9 +1,39 @@
 import os
 import shutil
 import glob
-import constants as C
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
+
+
+def list_files(
+        spark,
+        directory_path,
+        extension=None
+    ):
+    jvm = spark._jvm
+    hadoop_conf = spark._jsc.hadoopConfiguration()
+    path = jvm.org.apache.hadoop.fs.Path(directory_path)
+    fs = path.getFileSystem(hadoop_conf)
+
+    if not fs.exists(path):
+        raise FileNotFoundError(f"Directory not found: {directory_path}")
+
+    file_statuses = fs.listStatus(path)
+    files = []
+
+    for status in file_statuses:
+        file_path = status.getPath().toString()
+
+        if file_path.startswith("file:"):
+            file_path = file_path.replace("file:", "", 1)
+
+        if extension:
+            if file_path.endswith(extension):
+                files.append(file_path)
+        else:
+            files.append(file_path)
+
+    return files
 
 
 def load_raw_data(file_path, spark, header=True):
@@ -15,40 +45,67 @@ def load_raw_data(file_path, spark, header=True):
     return df
 
 
-def get_files_by_year(base_path, start_year, end_year):
-    pdf_files = []
+def get_files_by_year(
+        base_path,
+        spark,
+        start_year,
+        end_year
+    ):
     excel_files = []
     csv_files = []
-
-    all_files = []
-
-    def collect_files(collector, file_paths, extension):
-        collector.extend([
-            file_path
-            for file_path in file_paths
-            if file_path.endswith(extension)
-        ])
 
     for year in range(start_year, end_year + 1):
         partition_folder = f"year={year}"
         folder_path = os.path.join(base_path, partition_folder)
-        current_year_files = glob.glob(os.path.join(folder_path, "*"))
 
-        if current_year_files:
-            all_files.extend(current_year_files)
+        try:
+            current_year_files = list_files(spark, folder_path)
 
-    if not all_files:
+            excel_files.extend([f for f in current_year_files if f.endswith(".xlsx")])
+            csv_files.extend([f for f in current_year_files if f.endswith(".csv")])
+        except FileNotFoundError:
+            print(f"[WARNING] Missing partition: {partition_folder}")
+
+    if not (excel_files or csv_files):
         raise FileNotFoundError("[WARNING] No files found.")
-    
-    collect_files(pdf_files, all_files, ".pdf")
-    collect_files(excel_files, all_files, ".xlsx")
-    collect_files(csv_files, all_files, ".csv")
 
-    return pdf_files, excel_files, csv_files
+    return excel_files, csv_files
+
+
+# def get_files_by_year(base_path, spark, start_year, end_year):
+#     pdf_files = []
+#     excel_files = []
+#     csv_files = []
+
+#     all_files = []
+
+#     def collect_files(collector, file_paths, extension):
+#         collector.extend([
+#             file_path
+#             for file_path in file_paths
+#             if file_path.endswith(extension)
+#         ])
+
+#     for year in range(start_year, end_year + 1):
+#         partition_folder = f"year={year}"
+#         folder_path = os.path.join(base_path, partition_folder)
+#         # current_year_files = glob.glob(os.path.join(folder_path, "*"))
+#         current_year_files = list_files(spark, folder_path)
+
+#         if current_year_files:
+#             all_files.extend(current_year_files)
+
+#     if not all_files:
+#         raise FileNotFoundError("[WARNING] No files found.")
+    
+#     collect_files(pdf_files, all_files, ".pdf")
+#     collect_files(excel_files, all_files, ".xlsx")
+#     collect_files(csv_files, all_files, ".csv")
+
+#     return pdf_files, excel_files, csv_files
 
 
 def get_file_by_state(base_path):
-    # print(base_path)
     partition_folder_paths = glob.glob(os.path.join(base_path, "*"))
 
     if partition_folder_paths:
@@ -57,28 +114,8 @@ def get_file_by_state(base_path):
         partition_folder = f"state={partition_key}"
         folder_path = os.path.join(base_path, partition_folder)
         state_file = glob.glob(os.path.join(folder_path, "*"))[0]
-    print(f"STATE FILE: {state_file}")
+
     return state_file
-
-
-
-    # # print(partition_folder_paths)
-    # partition_keys = [partition_fp.split("=")[-1] for partition_fp in partition_folder_paths]
-
-    # csv_files = []
-
-    # for partition_key in partition_keys:
-    #     partition_folder = f"state={partition_key}"
-    #     folder_path = os.path.join(base_path, partition_folder)
-    #     current_state_files = glob.glob(os.path.join(folder_path, "*"))
-
-    #     if current_state_files:
-    #         csv_files.extend(current_state_files)
-    
-    # if not csv_files:
-    #     raise FileNotFoundError("[WARNING] No files found.")
-
-    # return csv_files
 
 
 def parallelize_processing(files, process_function, spark):
@@ -93,6 +130,10 @@ def parallelize_processing(files, process_function, spark):
 
 
 def move_file_to_archived(file_path: str, archived_folder: str):
+    if file_path.startswith("s3a://"):
+        print("[INFO] S3 archival skipped.")
+        return
+
     os.makedirs(archived_folder, exist_ok=True)
 
     file_name = os.path.basename(file_path)
@@ -105,9 +146,11 @@ def move_file_to_archived(file_path: str, archived_folder: str):
 
 def path_exists(spark, path: str) -> bool:
     if path.startswith("s3a://"):
+        jvm = spark._jvm
         hadoop_conf = spark._jsc.hadoopConfiguration()
-        fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(hadoop_conf)
-        return fs.exists(spark._jvm.org.apache.hadoop.fs.Path(path))
+        hadoop_path = jvm.org.apache.hadoop.fs.Path(path)
+        fs = hadoop_path.getFileSystem(hadoop_conf)
+        return fs.exists(hadoop_path)
     else:
         return os.path.exists(path)
 
@@ -142,39 +185,62 @@ def get_affected_partitions(incoming_df, partition):
 
 
 def archive_partition(
-    incoming_root_path: str,
-    archived_root_path: str,
-    partition: str
-):
-    source_partition_path = os.path.join(
         incoming_root_path,
-        partition
-    )
-
-    destination_partition_path = os.path.join(
         archived_root_path,
         partition
-    )
+    ):
+    if incoming_root_path.startswith("s3a://"):
+        print(f"[INFO] S3 archival skipped for partition: {partition}")
+        return
 
-    # create archived root folder if not exists
+    source_partition_path = os.path.join(incoming_root_path, partition)
+    destination_partition_path = os.path.join(archived_root_path, partition)
+
     os.makedirs(archived_root_path, exist_ok=True)
 
-    # remove existing archived partition if exists
-    # prevents shutil.move() conflicts
     if os.path.exists(destination_partition_path):
         shutil.rmtree(destination_partition_path)
 
-    shutil.move(
-        source_partition_path,
-        destination_partition_path
-    )
+    shutil.move(source_partition_path, destination_partition_path)
 
-    print(
-        f"[ARCHIVED] {source_partition_path} -> {destination_partition_path}"
-    )
+    print(f"[ARCHIVED] {source_partition_path} -> {destination_partition_path}")
+
+# def archive_partition(
+#     incoming_root_path: str,
+#     archived_root_path: str,
+#     partition: str
+# ):
+#     source_partition_path = os.path.join(
+#         incoming_root_path,
+#         partition
+#     )
+
+#     destination_partition_path = os.path.join(
+#         archived_root_path,
+#         partition
+#     )
+
+#     # create archived root folder if not exists
+#     os.makedirs(archived_root_path, exist_ok=True)
+
+#     # remove existing archived partition if exists
+#     # prevents shutil.move() conflicts
+#     if os.path.exists(destination_partition_path):
+#         shutil.rmtree(destination_partition_path)
+
+#     shutil.move(
+#         source_partition_path,
+#         destination_partition_path
+#     )
+
+#     print(
+#         f"[ARCHIVED] {source_partition_path} -> {destination_partition_path}"
+#     )
 
 
 def incremental_updates(spark, incoming_df, parquet_path, partition, affected_partitions):
+    incoming_df = incoming_df.cache()
+    
     if path_exists(spark, parquet_path):
         existing_df = (
             spark.read

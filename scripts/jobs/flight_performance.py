@@ -1,10 +1,12 @@
-import scripts.ingestions.flight_performance_raw as flight_performance_ingestion
-import scripts.transformations.flight_performance_cleaned as flight_performance_transformation
+import scripts.ingestions.flight_performance_raw as fp_ingestion
+import scripts.transformations.flight_performance_cleaned as fp_transformation
 import scripts.utils.dq_transformation_utils as dq_transformation
-import scripts.utils.dq_ingestion_utils as idq
+import scripts.utils.dq_ingestion_utils as dq_ingestion
 import scripts.utils.utils as u
 import constants as c
+
 import pyspark.sql.functions as F
+import re
 
 
 def run_flight_performance_incremental_job(
@@ -14,16 +16,16 @@ def run_flight_performance_incremental_job(
         raw_parquet_path,
         transformed_parquet_path):
     # Ingestion
-    fp_ingestion_dq = idq.IngestionDataQuality()
-    csv_files, fp_raw_df = flight_performance_ingestion.load_flight_performance_data(
+    csv_files, fp_raw_df = fp_ingestion.load_flight_performance_data(
         incoming_path, 
         spark)
+    
+    drop_diversion_cols = [col_name for col_name in fp_raw_df.columns if re.match(r"^DIV\d*_", col_name)]
+
+    fp_raw_df = fp_raw_df.drop(*drop_diversion_cols)
 
     # DQ ingestion: verify combined row counts of all csv files == raw dataset total row count
-    print("\n--------------- DQ INGESTION ---------------\n")
-    fp_ingestion_dq.verify_source_file_row_counts(csv_files)
-    fp_ingestion_dq.log_raw_df_count(fp_raw_df)
-    fp_ingestion_dq.verify_total_row_counts()
+    dq_ingestion.log_ingestion_summary(csv_files, fp_raw_df)
 
     # Identify partitions affected by the new data for incremental updates
     affected_partitions = u.get_affected_partitions(fp_raw_df, "YEAR")
@@ -35,13 +37,11 @@ def run_flight_performance_incremental_job(
         affected_partitions)
 
     fp_raw_parquet_df = spark.read.parquet(raw_parquet_path)
+    fp_raw_parquet_df.count()
 
     # DQ pre-transform
     print("\n--------------- DQ BEFORE TRANSFORMATION ---------------\n")
-    # inspect schema (field type, nullability)
     fp_raw_parquet_df.printSchema()
-    # get row count from the raw dataset
-    print(fp_raw_parquet_df.count())
     # inspect nullable columns
     dq_transformation.check_null_counts(fp_raw_parquet_df)
     # inspect column uniqueness
@@ -50,7 +50,7 @@ def run_flight_performance_incremental_job(
 
     # Transformation    
     columns = [raw_col for raw_col, _ in c.FLIGHT_PERFORMANCE_COLUMN_MAPPING.items()]
-    flight_df = flight_performance_transformation.select_and_rename_columns(
+    flight_df = fp_transformation.select_and_rename_columns(
         fp_raw_parquet_df, 
         columns, 
         c.FLIGHT_PERFORMANCE_COLUMN_MAPPING)
@@ -78,7 +78,7 @@ def run_flight_performance_incremental_job(
     ## impute missing values
     ### impute missing scheduled flight duration (scheduled_elapsed_time)
     condition_scheduled = F.col("scheduled_elapsed_time").isNotNull()
-    imputed_scheduled_time_df = flight_performance_transformation.conditional_impute(
+    imputed_scheduled_time_df = fp_transformation.conditional_impute(
         flight_df, 
         condition_scheduled, 
         "scheduled_elapsed_time", 
@@ -86,7 +86,7 @@ def run_flight_performance_incremental_job(
 
     ### impute missing actual flight duration (actual_elapsed_time) for non-cancelled flights
     condition_actual = (F.col("is_cancelled") == False) & (F.col("actual_elapsed_time").isNotNull())
-    imputed_actual_time_df = flight_performance_transformation.conditional_impute(
+    imputed_actual_time_df = fp_transformation.conditional_impute(
         imputed_scheduled_time_df, 
         condition_actual, 
         "actual_elapsed_time",
@@ -96,7 +96,7 @@ def run_flight_performance_incremental_job(
 
     ### impute missing taxi in time for non-cancelled flights    
     condition_taxi_in = (F.col("is_cancelled") == False) & (F.col("taxi_in_time").isNotNull())
-    imputed_taxi_in_df = flight_performance_transformation.conditional_impute(
+    imputed_taxi_in_df = fp_transformation.conditional_impute(
         imputed_actual_time_df,
         condition_taxi_in,
         "taxi_in_time",
@@ -124,23 +124,13 @@ def run_flight_performance_incremental_job(
 
     # reorder columns
     columns_reordered = ["flight_pk"] + flight_df.columns
-    fp_cleaned = fp_cleaned.select(*columns_reordered)
+    fp_cleaned = fp_cleaned.select(*columns_reordered).cache()
     
     # DQ post-transform
     print("\n--------------- DQ AFTER TRANSFORMATION ---------------\n")
     fp_cleaned.printSchema()
-
-    fp_cleaned.show(20)
     
     print(f"Row count: {str(fp_cleaned.count())}")
-
-    imputed_delays_df.filter(
-        (F.col('carrier_delay').isNull()) | 
-        (F.col('weather_delay').isNull()) | 
-        (F.col('nas_delay').isNull()) | 
-        (F.col('security_delay').isNull()) | 
-        (F.col('late_aircraft_delay').isNull())
-    ).show()
 
     # incremental update transformed df
     u.incremental_updates(

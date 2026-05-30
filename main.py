@@ -59,52 +59,52 @@ def main():
 
 
     # run pipelines
-    # airport_job.run_airport_job(
-    #     airport_incoming_path, 
-    #     airport_archived_path, 
-    #     airport_transformed_csv_path, 
-    #     spark)
+    airport_job.run_airport_job(
+        airport_incoming_path, 
+        airport_archived_path, 
+        airport_transformed_csv_path, 
+        spark)
 
-    # dept_performance_job.run_departure_performance_job(
-    #     airport_departure_performance_incoming_path, 
-    #     airport_departure_performance_archived_path,
-    #     airport_departure_performance_transformed_csv_path,
-    #     spark)
+    dept_performance_job.run_departure_performance_job(
+        airport_departure_performance_incoming_path, 
+        airport_departure_performance_archived_path,
+        airport_departure_performance_transformed_csv_path,
+        spark)
     
-    # flight_performance_job.run_flight_performance_incremental_job(
-    #     flight_performance_incoming_path,
-    #     flight_performance_archived_path,
-    #     spark,
-    #     flight_performance_raw_parquet_path,
-    #     flight_performance_transformed_parquet_path)
+    flight_performance_job.run_flight_performance_incremental_job(
+        flight_performance_incoming_path,
+        flight_performance_archived_path,
+        spark,
+        flight_performance_raw_parquet_path,
+        flight_performance_transformed_parquet_path)
 
-    # tsa_throughput_job.run_tsa_throughput_incremental_job(
-    #     tsa_throughput_incoming_path,
-    #     tsa_throughput_archived_path, 
-    #     spark,
-    #     tsa_throughput_raw_parquet_path,
-    #     tsa_throughput_transformed_parquet_path)
+    tsa_throughput_job.run_tsa_throughput_incremental_job(
+        tsa_throughput_incoming_path,
+        tsa_throughput_archived_path, 
+        spark,
+        tsa_throughput_raw_parquet_path,
+        tsa_throughput_transformed_parquet_path)
 
-    # tsa_wait_time_job.run_tsa_wait_time_job(
-    #     tsa_wait_time_incoming_path,
-    #     tsa_wait_time_archived_path,
-    #     tsa_wait_time_transformed_parquet_path,
-    #     spark)
+    tsa_wait_time_job.run_tsa_wait_time_job(
+        tsa_wait_time_incoming_path,
+        tsa_wait_time_archived_path,
+        tsa_wait_time_transformed_parquet_path,
+        spark)
 
-    # weather_job.run_tsa_weather_incremental_job(
-    #     weather_source_path,
-    #     weather_incoming_path,
-    #     weather_archived_path, 
-    #     spark,
-    #     weather_raw_parquet_path,
-    #     weather_transformed_parquet_path)
+    weather_job.run_tsa_weather_incremental_job(
+        weather_source_path,
+        weather_incoming_path,
+        weather_archived_path, 
+        spark,
+        weather_raw_parquet_path,
+        weather_transformed_parquet_path)
 
-    # aw_mapping_job.run_airport_weather_mapping_job(
-    #     spark,
-    #     airport_transformed_csv_path,
-    #     weather_transformed_parquet_path,
-    #     airport_weather_mapping_transformed_csv_path
-    # )
+    aw_mapping_job.run_airport_weather_mapping_job(
+        spark,
+        airport_transformed_csv_path,
+        weather_transformed_parquet_path,
+        airport_weather_mapping_transformed_csv_path
+    )
 
     gold_job.run_airport_congestion_gold_job(
         spark,

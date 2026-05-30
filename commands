@@ -1,0 +1,16 @@
+-- BUILD DOCKER IMAGE --
+docker build -t airport-etl .
+
+-- RUN DOCKER IMAGE --
+docker run -v ${PWD}:/app airport-etl
+
+docker run `
+-v ${PWD}:/app `
+-v C:\Users\kyuen\.aws:/root/.aws `
+airport-etl
+
+-- COPY FROM S3 TO LOCAL (IN POWERSHELL) --
+aws s3 cp `
+s3://airport-congestion-prediction-system/output/transformed/airport_congestion_gold/ `
+"C:\MSDA\D610 (capstone)\Airport Congestion Prediction System\Task 2\Airport Congestion Prediction System\data\output\transformed\airport_congestion_gold" `
+--recursive

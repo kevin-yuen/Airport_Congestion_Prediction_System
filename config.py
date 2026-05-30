@@ -1,8 +1,8 @@
 import os
 
 
-# ENV = os.getenv("ENV", "local")
-ENV = os.getenv("ENV", "prod")
+ENV = os.getenv("ENV", "local")
+# ENV = os.getenv("ENV", "prod")
 
 # -----------------------------
 # Base Paths

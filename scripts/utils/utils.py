@@ -72,39 +72,6 @@ def get_files_by_year(
     return excel_files, csv_files
 
 
-# def get_files_by_year(base_path, spark, start_year, end_year):
-#     pdf_files = []
-#     excel_files = []
-#     csv_files = []
-
-#     all_files = []
-
-#     def collect_files(collector, file_paths, extension):
-#         collector.extend([
-#             file_path
-#             for file_path in file_paths
-#             if file_path.endswith(extension)
-#         ])
-
-#     for year in range(start_year, end_year + 1):
-#         partition_folder = f"year={year}"
-#         folder_path = os.path.join(base_path, partition_folder)
-#         # current_year_files = glob.glob(os.path.join(folder_path, "*"))
-#         current_year_files = list_files(spark, folder_path)
-
-#         if current_year_files:
-#             all_files.extend(current_year_files)
-
-#     if not all_files:
-#         raise FileNotFoundError("[WARNING] No files found.")
-    
-#     collect_files(pdf_files, all_files, ".pdf")
-#     collect_files(excel_files, all_files, ".xlsx")
-#     collect_files(csv_files, all_files, ".csv")
-
-#     return pdf_files, excel_files, csv_files
-
-
 def get_file_by_state(base_path):
     partition_folder_paths = glob.glob(os.path.join(base_path, "*"))
 
@@ -204,38 +171,6 @@ def archive_partition(
     shutil.move(source_partition_path, destination_partition_path)
 
     print(f"[ARCHIVED] {source_partition_path} -> {destination_partition_path}")
-
-# def archive_partition(
-#     incoming_root_path: str,
-#     archived_root_path: str,
-#     partition: str
-# ):
-#     source_partition_path = os.path.join(
-#         incoming_root_path,
-#         partition
-#     )
-
-#     destination_partition_path = os.path.join(
-#         archived_root_path,
-#         partition
-#     )
-
-#     # create archived root folder if not exists
-#     os.makedirs(archived_root_path, exist_ok=True)
-
-#     # remove existing archived partition if exists
-#     # prevents shutil.move() conflicts
-#     if os.path.exists(destination_partition_path):
-#         shutil.rmtree(destination_partition_path)
-
-#     shutil.move(
-#         source_partition_path,
-#         destination_partition_path
-#     )
-
-#     print(
-#         f"[ARCHIVED] {source_partition_path} -> {destination_partition_path}"
-#     )
 
 
 def incremental_updates(spark, incoming_df, parquet_path, partition, affected_partitions):

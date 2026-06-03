@@ -65,11 +65,11 @@ def main():
     #     airport_transformed_csv_path, 
     #     spark)
 
-    dept_performance_job.run_departure_performance_job(
-        airport_departure_performance_incoming_path, 
-        airport_departure_performance_archived_path,
-        airport_departure_performance_transformed_csv_path,
-        spark)
+    # dept_performance_job.run_departure_performance_job(
+    #     airport_departure_performance_incoming_path, 
+    #     airport_departure_performance_archived_path,
+    #     airport_departure_performance_transformed_csv_path,
+    #     spark)
     
     # flight_performance_job.run_flight_performance_incremental_job(
     #     flight_performance_incoming_path,
@@ -106,15 +106,15 @@ def main():
     #     airport_weather_mapping_transformed_csv_path
     # )
 
-    # gold_job.run_airport_congestion_gold_job(
-    #     spark,
-    #     flight_performance_transformed_parquet_path,
-    #     tsa_throughput_transformed_parquet_path,
-    #     tsa_wait_time_transformed_parquet_path,
-    #     weather_transformed_parquet_path,
-    #     airport_weather_mapping_transformed_csv_path,
-    #     airport_congestion_gold_transformed_parquet_path
-    # )
+    gold_job.run_airport_congestion_gold_job(
+        spark,
+        flight_performance_transformed_parquet_path,
+        tsa_throughput_transformed_parquet_path,
+        tsa_wait_time_transformed_parquet_path,
+        weather_transformed_parquet_path,
+        airport_weather_mapping_transformed_csv_path,
+        airport_congestion_gold_transformed_parquet_path
+    )
 
 
 if __name__ == "__main__":

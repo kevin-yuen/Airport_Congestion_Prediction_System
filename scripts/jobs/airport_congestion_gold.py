@@ -81,6 +81,9 @@ def run_airport_congestion_gold_job(
 
     # join weather and airport_weather_mapping
     airport_weather_df = gold_transformation.join_weather(mapping_df, weather_df)
+
+    # show sample data after aggregation
+    flight_agg_df.show(20, truncate=False)
     
     # create gold dataset
     gold_df = gold_transformation.create_gold_dataset(

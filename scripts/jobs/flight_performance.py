@@ -132,6 +132,8 @@ def run_flight_performance_incremental_job(
     
     print(f"Row count: {str(fp_cleaned.count())}")
 
+    dq_transformation.check_null_counts(fp_cleaned)
+
     # incremental update transformed df
     u.incremental_updates(
         spark,

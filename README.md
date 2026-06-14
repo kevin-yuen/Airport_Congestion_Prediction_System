@@ -98,3 +98,61 @@ Key features include:
 - Average TSA wait time
 - Weather metrics
 - Passenger-to-flight ratio
+---
+#### Exploratory Data Analysis
+
+Exploratory analysis was performed to:
+- Assess data quality
+- Evaluate feature distributions
+- Identify outliers
+- Analyze skewness
+- Investigate operational variability across airports
+
+The analysis revealed substantial variability in airport congestion behavior and identified several highly skewed operational variables requiring additional preprocessing and transformation.
+---
+#### Machine Learning Models
+
+Two regression models were developed:
+
+##### Linear Regression
+Interpretable baseline model used to evaluate linear relationships between operational variables and TSA wait times.
+
+##### Random Forest Regression
+Ensemble-learning model used to capture nonlinear interactions among flight activity, passenger demand, weather conditions, and airport-specific characteristics.
+---
+#### Model Performance
+
+| Model	| MAE | RMSE | R²
+| Linear Regression | 3.8914 | 6.8608 | 0.2291
+| Random Forest Regression | 3.3391 | 5.9880 | 0.4128
+
+The Random Forest model achieved the strongest predictive performance, reducing prediction error by approximately 14% and explaining substantially more variation in TSA wait times than the baseline linear model.
+
+![alt text](image-2.png)
+---
+#### Feature Importance Analysis
+
+The analysis identified several highly influential predictors of airport congestion:
+- Airport identifiers
+- Total flight volume
+- Passenger demand
+- Arrival delays
+- Carrier delays
+- NAS delays
+- Taxi times
+- Passenger-to-flight ratios
+
+The findings indicate that airport congestion results from the interaction of multiple operational and environmental conditions rather than a single isolated factor.
+
+![alt text](image-3.png)
+---
+#### Key Outcomes
+
+- Built an end-to-end PySpark ETL pipeline
+- Integrated multiple heterogeneous aviation datasets
+- Implemented incremental data-processing workflows
+- Developed cloud-integrated data architecture using Amazon S3
+- Created a unified airport congestion gold dataset
+- Applied machine-learning techniques for congestion estimation
+- Identified operational drivers of airport congestion
+- Demonstrated scalable data engineering and predictive analytics capabilities

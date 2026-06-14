@@ -16,7 +16,6 @@ This project demonstrates modern data engineering practices, including:
 ---
 #### Business Problem
 Passengers are commonly advised to arrive at airports using generalized recommendations, such as arriving two hours before domestic flights or three hours before international flights. These recommendations do not account for airport-specific operational conditions, passenger demand fluctuations, weather disruptions, or changing congestion patterns.
-
 This project investigates whether historical operational data can be used to estimate airport congestion and support more informed and data-driven arrival recommendations.
 ---
 #### Solution Architecture

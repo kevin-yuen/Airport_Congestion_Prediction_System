@@ -122,10 +122,6 @@ Interpretable baseline model used to evaluate linear relationships between opera
 ---
 #### Model Performance
 
-| Model	| MAE | RMSE | R² |
-| Linear Regression | 3.8914 | 6.8608 | 0.2291 |
-| Random Forest Regression | 3.3391 | 5.9880 | 0.4128 |
-
 The Random Forest model achieved the strongest predictive performance, reducing prediction error by approximately 14% and explaining substantially more variation in TSA wait times than the baseline linear model.
 
 ![alt text](image-2.png)
